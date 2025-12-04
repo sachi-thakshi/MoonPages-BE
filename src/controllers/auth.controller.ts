@@ -8,11 +8,11 @@ import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
 dotenv.config()
 
-const JWT_REFRESH_SECRET = process.env.JWT_SECRET as string
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET as string
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
-    const { firstname, lastname , email, password} = req.body
+    const { firstname, lastname , email, password, role} = req.body
 
     const existingUser = await User.findOne({ email })
     if (existingUser) {
@@ -21,17 +21,35 @@ export const registerUser = async (req: Request, res: Response) => {
 
     const hash = await bcrypt.hash(password, 10)
 
+    const normalizedRole = (role as string).toUpperCase()
+
+    const validRoleValues = Object.values(Role)
+
+    if (!validRoleValues.includes(normalizedRole as Role)) {
+      return res.status(400).json({ message: "Invalid role value" })
+    }
+    
+    const userRoles = [normalizedRole as Role];
+
     const user = await User.create({
       firstname,
       lastname,
       email,
       password: hash,
-      roles: [Role.USER]
+      roles: userRoles
     })
+
+    const accessToken = signAccessToken(user as IUSER)
+    const refreshToken = signRefreshToken(user as IUSER)
 
     res.status(201).json({
       message: "User registed",
-      data: { email: user.email, roles: user.roles }
+      data: { 
+        email: user.email, 
+        roles: user.roles,
+        accessToken,
+        refreshToken
+      }
     })
   } catch (err) {
     console.error(err)
@@ -92,9 +110,17 @@ export const registerAdmin = async (req: Request, res: Response) => {
       roles: [Role.ADMIN]
     })
 
+    const accessToken = signAccessToken(user as IUSER)
+    const refreshToken = signRefreshToken(user as IUSER)
+
     res.status(201).json({
       message: "Admin registed",
-      data: { email: user.email, roles: user.roles }
+      data: { 
+        email: user.email, 
+        roles: user.roles,
+        accessToken,
+        refreshToken 
+      }
     })
   } catch (err) {
     console.error(err)

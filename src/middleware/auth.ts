@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express"
-import jwt from "jsonwebtoken"
+import jwt, { TokenExpiredError } from "jsonwebtoken"
 import dotenv from "dotenv"
 dotenv.config()
 
@@ -18,7 +18,7 @@ export const authenticate  = (
     if (!authHeader) {
         return res.status(401).json({ message: "No token provided "})
     }
-    const token = authHeader.split(" ")[1]
+    const token = authHeader.split(' ')[1]
 
     try {
         const payload = jwt.verify(token, JWT_SECRET)
@@ -26,8 +26,15 @@ export const authenticate  = (
         next()
     } catch (err) {
         console.error(err)
+
+        if (err instanceof TokenExpiredError) {
+            return res.status(401).json({ 
+                message: "Access token expired.",
+            })
+        }
+
         res.status(403).json({
-            message: "Invalid or expire token"
+            message: "Invalid token"
         })
     }
 }
