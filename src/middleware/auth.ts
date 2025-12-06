@@ -5,6 +5,11 @@ dotenv.config()
 
 const JWT_SECRET = process.env.JWT_SECRET as string
 
+interface MyJwtPayload extends jwt.JwtPayload {
+  sub: string;     
+  roles: string[];
+}
+
 export interface AUthRequest extends Request {
   user?: any
 }
@@ -21,8 +26,12 @@ export const authenticate  = (
     const token = authHeader.split(' ')[1]
 
     try {
-        const payload = jwt.verify(token, JWT_SECRET)
-        req.user = payload
+        const payload = jwt.verify(token, JWT_SECRET) as MyJwtPayload
+        req.user = {
+            id: payload.sub,   
+            roles: payload.roles
+        };
+        // req.user = payload
         next()
     } catch (err) {
         console.error(err)

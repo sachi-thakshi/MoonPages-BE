@@ -21,7 +21,7 @@ export const registerUser = async (req: Request, res: Response) => {
 
     const hash = await bcrypt.hash(password, 10)
 
-    const normalizedRole = (role as string).toUpperCase()
+    const normalizedRole = role ? (role as string).toUpperCase() : Role.USER
 
     const validRoleValues = Object.values(Role)
 

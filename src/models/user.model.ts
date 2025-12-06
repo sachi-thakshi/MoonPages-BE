@@ -21,6 +21,7 @@ export interface IUSER extends Document {
     password: string
     roles: Role[]
     approved: Status
+    profilePic?: string
 }
 
 const userSchema = new Schema<IUSER>({
@@ -33,7 +34,8 @@ const userSchema = new Schema<IUSER>({
     type: String,
     enum: Object.values(Status),
     default: Status.NONE
-  }
+  },
+  profilePic: { type: String, default: "" }
 })
 
 export const User = mongoose.model<IUSER>("User", userSchema)
