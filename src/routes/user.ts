@@ -1,7 +1,7 @@
 import { Router } from "express"
 import { authenticate } from "../middleware/auth"
 import { upload } from "../middleware/upload";
-import { updateUser, deleteUser, uploadProfilePic } from "../controllers/user.controller";
+import { updateUser, deleteUser, uploadProfilePic, getAllDetails } from "../controllers/user.controller";
 
 const router = Router()
 
@@ -13,5 +13,7 @@ router.delete("/delete", authenticate, deleteUser)
 
 // Upload profile image
 router.post("/upload-profile", authenticate, upload.single("profilePic"), uploadProfilePic)
+
+router.get("/details", authenticate, getAllDetails)
 
 export default router

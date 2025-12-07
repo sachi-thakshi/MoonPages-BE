@@ -15,8 +15,8 @@ export enum Status {
 
 export interface IUSER extends Document {
     _id: mongoose.Types.ObjectId
-    firstname?: string
-    lastname?: string
+    firstName?: string
+    lastName?: string
     email: string
     password: string
     roles: Role[]
@@ -26,8 +26,8 @@ export interface IUSER extends Document {
 
 const userSchema = new Schema<IUSER>({
   email: { type: String, unique: true, lowercase: true, required: true },
-  firstname: { type: String, required: true },
-  lastname: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
   password: { type: String, required: true },
   roles: { type: [String], enum: Object.values(Role), default: [Role.USER] },
   approved: {

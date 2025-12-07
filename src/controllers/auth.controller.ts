@@ -6,12 +6,14 @@ import { AUthRequest } from "../middleware/auth"
 import jwt from "jsonwebtoken"
 
 import dotenv from "dotenv"
-dotenv.config()
+dotenv. config()
 
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET as string
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
+    console.log("Raw Request Body:", req.body)
+
     const { firstname, lastname , email, password, role} = req.body
 
     const existingUser = await User.findOne({ email })
@@ -32,8 +34,8 @@ export const registerUser = async (req: Request, res: Response) => {
     const userRoles = [normalizedRole as Role];
 
     const user = await User.create({
-      firstname,
-      lastname,
+      firstName: firstname,
+      lastName: lastname,
       email,
       password: hash,
       roles: userRoles
@@ -134,7 +136,7 @@ export const getMyProfile = async (req: AUthRequest, res: Response) => {
   if (!req.user) {
     return res.status(401).json({ message: "Unauthorized" })
   }
-  const user = await User.findById(req.user.sub).select("-password")
+  const user = await User.findById(req.user.id).select("-password")
 
   if (!user) {
     return res.status(404).json({
