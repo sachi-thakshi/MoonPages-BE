@@ -4,6 +4,7 @@ import cors from "cors"
 import mongoose from "mongoose"
 import authRouter from "./routes/auth"
 import userRouter from "./routes/user"
+import bookRouter from "./routes/book"
 
 dotenv.config()
 
@@ -27,6 +28,7 @@ app.use((req, res, next) => {
 
 app.use("/api/v1/auth", authRouter)
 app.use("/api/v1/user", userRouter)
+app.use("/api/v1/books", bookRouter)
 
 mongoose
     .connect(MONGO_URI)
