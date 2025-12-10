@@ -28,4 +28,3 @@ router.post("/refresh", refreshToken)
 router.get("/me", authenticate, getMyProfile)
 
 export default router
-

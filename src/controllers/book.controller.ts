@@ -105,16 +105,12 @@ export const getAuthorBooks = async (req: AUthRequest, res: Response) => {
     }
 }
 
-export const getChapter = async (req: AUthRequest, res: Response) => {
+export const getChapter = async (req: Request, res: Response) => {
     try {
-        if (!req.user || !checkAuthorRole(req.user)) {
-            return res.status(403).json({ message: "Access denied." })
-        }
-        
         const { bookId, chapterNumber } = req.params
         const numChapter = parseInt(chapterNumber)
 
-        const book = await Book.findOne({ _id: bookId, author: req.user.id })
+        const book = await Book.findOne({ _id: bookId })
         if (!book) {
             return res.status(404).json({ message: "Book not found." })
         }
@@ -404,5 +400,39 @@ export const deleteBook = async (req: AUthRequest, res: Response) => {
     } catch (err) {
         console.error("Delete book error:", err)
         res.status(500).json({ message: "Failed to delete book." })
+    }
+}
+
+export const getPublishedBooks = async (req: Request, res: Response) => {
+    try {
+        const page = parseInt(req.query.page as string) || 1
+        const limit = parseInt(req.query.limit as string) || 10
+        const skip = (page - 1) * limit
+
+        const filter = { status: "PUBLISHED" }
+
+        const [books, totalBooks] = await Promise.all([
+            Book.find(filter) // <-- Applied filter here
+                .select('title coverImageUrl totalWordCount categories status') 
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            Book.countDocuments(filter) // <-- Applied filter to count
+        ])
+
+        res.status(200).json({
+            success: true,
+            books,
+            pagination: {
+                totalPages: Math.ceil(totalBooks / limit),
+                currentPage: page,
+                totalItems: totalBooks,
+                limit: limit
+            }
+        })
+
+    } catch (err) {
+        console.error("Fetch published books error:", err)
+        res.status(500).json({ message: "Failed to fetch published books." })
     }
 }

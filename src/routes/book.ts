@@ -12,7 +12,8 @@ import {
     updateBookCategories,
     getFullBook, 
     updateBookStatus,
-    deleteBook
+    deleteBook,
+    getPublishedBooks
 } from '../controllers/book.controller'
 
 const router = Router()
@@ -23,9 +24,11 @@ router.get('/', authenticate, getAuthorBooks)
 
 router.post('/:bookId/chapter', authenticate, addChapter)
 
-router.get('/chapter/:bookId/:chapterNumber', authenticate, getChapter)
+router.get('/chapter/:bookId/:chapterNumber', getChapter)
 
 router.patch('/chapter/:bookId/:chapterNumber', authenticate, updateChapterByNumber)
+
+router.get('/published', getPublishedBooks)
 
 router.get('/:bookId', authenticate, getFullBook)
 
