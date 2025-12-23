@@ -6,6 +6,7 @@ import authRouter from "./routes/auth"
 import userRouter from "./routes/user"
 import bookRouter from "./routes/book"
 import aiRouter from "./routes/ai"
+import authorRoutes from './routes/author'
 
 dotenv.config()
 
@@ -31,6 +32,7 @@ app.use("/api/v1/auth", authRouter)
 app.use("/api/v1/user", userRouter)
 app.use("/api/v1/books", bookRouter)
 app.use("/api/v1/ai", aiRouter)
+app.use('/api/v1/author', authorRoutes)
 
 mongoose
     .connect(MONGO_URI)
