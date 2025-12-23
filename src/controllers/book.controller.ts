@@ -412,7 +412,7 @@ export const getPublishedBooks = async (req: Request, res: Response) => {
         const filter = { status: "PUBLISHED" }
 
         const [books, totalBooks] = await Promise.all([
-            Book.find(filter) // <-- Applied filter here
+            Book.find(filter)
                 .select('title coverImageUrl totalWordCount categories status') 
                 .sort({ createdAt: -1 })
                 .skip(skip)
