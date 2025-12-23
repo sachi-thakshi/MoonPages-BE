@@ -39,6 +39,8 @@ const CommentSchema: Schema = new Schema({
     content: { type: String, required: true },
     chapterNumber: { type: Number },
     createdAt: { type: Date, default: Date.now },
+    authorReply: { type: String, default: null },
+    repliedAt: { type: Date, default: null },
 })
 
 const UserBookSchema: Schema = new Schema({
