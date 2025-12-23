@@ -9,7 +9,8 @@ import {
     addHighlight,
     deleteHighlight,
     addComment,
-    deleteComment
+    deleteComment,
+    getUserLibrary
 } from '../controllers/userBook.controller';
 
 const router = Router()
@@ -42,5 +43,7 @@ router.post('/reading/comment/:bookId', authenticate, addComment)
 
 // Remove a comment by ID
 router.delete('/reading/comment/:bookId/:commentId', authenticate, deleteComment)
+
+router.get('/reading/library', authenticate, getUserLibrary)
 
 export default router

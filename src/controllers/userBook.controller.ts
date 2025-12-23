@@ -13,7 +13,7 @@ const getOrCreateUserBook = async (userId: string, bookId: string) => {
         { user: userId, book: bookId },
         { $setOnInsert: { user: userId, book: bookId } },
         { upsert: true, new: true }
-    ).populate('comments.user', 'firstName lastName profilePic')
+    ).populate('comments.user', '_id firstName lastName profilePic')
 }
 
 export const getUserBookData = async (req: AUthRequest, res: Response) => {
@@ -190,5 +190,31 @@ export const deleteComment = async (req: AUthRequest, res: Response) => {
     } catch (err) {
         console.error("Delete Comment error:", err)
         res.status(500).json({ message: "Failed to delete comment." })
+    }
+}
+
+export const getUserLibrary = async (req: AUthRequest, res: Response) => {
+    try {
+        if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+
+        // Find all reading records for this user
+        const library = await UserBook.find({ user: req.user.id })
+            .populate({
+                path: 'book',
+                select: 'title author coverImageUrl chapters description',
+                // This ensures we only get books that actually exist
+            })
+            .sort({ updatedAt: -1 }); // Show most recently interacted books first
+
+        // Filter out any records where the book might have been deleted
+        const activeLibrary = library.filter(item => item.book !== null);
+
+        res.status(200).json({
+            success: true,
+            library: activeLibrary
+        });
+    } catch (err) {
+        console.error("Fetch User Library error:", err);
+        res.status(500).json({ message: "Failed to load your library." });
     }
 }

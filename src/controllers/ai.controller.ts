@@ -4,7 +4,7 @@ import axios from "axios"
 export const generateContent = async (req: Request, res: Response) => {
     const apiKey = process.env.GEMINI_API_KEY;
 
-    console.log("Gemini API Key Loaded:", !!apiKey)
+    console.log("Gemini API Key Loaded:", apiKey)
 
     if (!apiKey) {
         return res.status(500).json({
