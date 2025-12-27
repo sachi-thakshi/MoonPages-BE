@@ -9,6 +9,7 @@ import {
 import { authenticate } from "../middleware/auth"
 import { requireRole } from "../middleware/role"
 import { Role } from "../models/user.model"
+import { forgotPassword, resetPassword } from "../controllers/forgotpassword.controller"
 
 const router = Router()
 
@@ -26,5 +27,8 @@ router.post(
 router.post("/refresh", refreshToken)
 
 router.get("/me", authenticate, getMyProfile)
+
+router.post("/forgot-password", forgotPassword)
+router.post("/reset-password/:token", resetPassword)
 
 export default router
