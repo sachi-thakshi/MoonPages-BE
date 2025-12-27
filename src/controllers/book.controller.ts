@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import { Book, IBook, IChapter } from "../models/book.model"
 import { AUthRequest } from "../middleware/auth"
 import cloudinary from "../utils/cloudinary"
+import { User } from "../models/user.model"
 
 const checkAuthorRole = (user: any): boolean => {
     return user?.roles?.includes('AUTHOR')
@@ -322,20 +323,20 @@ export const updateBookCategories = async (req: AUthRequest, res: Response) => {
 
 export const getFullBook = async (req: AUthRequest, res: Response) => {
     try {
-        const { bookId } = req.params;
+        const { bookId } = req.params
 
-        const book = await Book.findById(bookId).select(
-            "title description coverImageUrl categories chapters status totalWordCount createdAt updatedAt"
-        );
+        const book = await Book.findById(bookId)
+            .select("title description coverImageUrl categories chapters status totalWordCount createdAt updatedAt author")
+            .populate('author', 'firstName lastName')
 
         if (!book) {
-            return res.status(404).json({ success: false, message: "Book not found." });
+            return res.status(404).json({ success: false, message: "Book not found." })
         }
 
-        res.status(200).json({ success: true, book });
+        res.status(200).json({ success: true, book })
     } catch (err) {
-        console.error("Get full book error:", err);
-        res.status(500).json({ success: false, message: "Failed to load book." });
+        console.error("Get full book error:", err)
+        res.status(500).json({ success: false, message: "Failed to load book." })
     }
 }
 
@@ -408,16 +409,46 @@ export const getPublishedBooks = async (req: Request, res: Response) => {
         const page = parseInt(req.query.page as string) || 1
         const limit = parseInt(req.query.limit as string) || 10
         const skip = (page - 1) * limit
+        const search = (req.query.search as string) || ""
 
-        const filter = { status: "PUBLISHED" }
+        let authorIds: string[] = []
+
+        if (search) {
+            const matchingAuthors = await User.find({
+                $or: [
+                    { firstName: new RegExp(search, "i") },
+                    { lastName: new RegExp(search, "i") }
+                ]
+            }).select("_id")
+
+            authorIds = matchingAuthors.map(a => a._id.toString())
+        }
+
+        const filter: any = { status: "PUBLISHED" }
+
+        if (search) {
+            const regex = new RegExp(search, "i")
+            filter.$or = [
+                { title: regex },
+                { description: regex },
+                { categories: regex },
+                { "chapters.title": regex },
+                { "chapters.content": regex },
+            ]
+
+            if (authorIds.length > 0) {
+                filter.$or.push({ author: { $in: authorIds } })
+            }
+        }
 
         const [books, totalBooks] = await Promise.all([
             Book.find(filter)
-                .select('title coverImageUrl totalWordCount categories status') 
+                .select("title coverImageUrl totalWordCount categories status author")
+                .populate("author", "firstName lastName")
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit),
-            Book.countDocuments(filter) // <-- Applied filter to count
+            Book.countDocuments(filter)
         ])
 
         res.status(200).json({

@@ -16,7 +16,7 @@ export interface IChapter {
 }
 
 export interface IBook extends Document {
-    author: mongoose.Types.ObjectId 
+    author: mongoose.Types.ObjectId | { firstName: string; lastName: string }
     title: string
     description: string
     chapters: IChapter[]
@@ -48,6 +48,14 @@ const bookSchema = new Schema<IBook>({
     },
     totalWordCount: { type: Number, default: 0 },
     coverImageUrl: { type: String, default: '' },
-}, { timestamps: true });
+}, { timestamps: true })
+
+bookSchema.index({
+  title: "text",
+  description: "text",
+  categories: "text",
+  "chapters.title": "text",
+  "chapters.content": "text"
+})
 
 export const Book = mongoose.model<IBook>('Book', bookSchema)
