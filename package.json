@@ -35,6 +35,7 @@
     "mongoose": "^8.20.1",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.12",
+    "openai": "^6.15.0",
     "pdf-parse": "^1.1.1",
     "pdftxt": "^0.1.0"
   }
