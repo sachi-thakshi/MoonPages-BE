@@ -17,13 +17,31 @@ const MONGO_URI = process.env.MONGO_URI as string
 
 const app = express()
 
+let isConnected = false
+const connectToDatabase = async () => {
+    if (isConnected) return
+    try {
+        await mongoose.connect(MONGO_URI)
+        isConnected = true;
+        console.log("DB Connected");
+    } catch (err) {
+        console.error("DB Connection Error:", err)
+    }
+}
+
 app.use(express.json())
 app.use(
     cors({
         origin: ["http://localhost:5173"],
-        methods: ["GET", "POST", "PUT", "DELETE", "PATCH"]
+        methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+        credentials: true
     })
 )
+
+app.use(async (req, res, next) => {
+    await connectToDatabase()
+    next()
+})
 
 app.use((req, res, next) => {
   console.log("Incoming request:", req.method, req.url)
@@ -38,16 +56,12 @@ app.use('/api/v1/author', authorRoutes)
 app.use('/api/v1/admin', adminRoutes)
 app.use('/api/v1/chat', chatRoutes)
 
-mongoose
-    .connect(MONGO_URI)
-    .then(() => {
-        console.log("DB Connected")
-    })
-    .catch((err) => {
-        console.error(err)
-        process.exit(1)
-    })
+app.get("/", (req, res) => res.send("Backend is live on Vercel!"))
 
-app.listen(PORT, () => {
-    console.log("Server is running")
-})
+export default app
+
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT || 5000, () => {
+        console.log(`Server is running locally on port ${PORT || 5000}`)
+    })
+}
