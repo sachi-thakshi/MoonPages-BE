@@ -14,7 +14,7 @@ export const signAccessToken = (user: IUSER): string => {
     }, 
     JWT_SECRET, 
     {
-    expiresIn: "3m"
+    expiresIn: "30m"
     }
   )
 }
