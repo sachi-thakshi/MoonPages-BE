@@ -153,27 +153,25 @@ export const refreshToken = async (req: Request, res: Response) => {
   try {
     const { token } = req.body
     if (!token) {
-      return res.status(400).json({
-        message: "Token required"
-      })
+      return res.status(400).json({ message: "Token required" })
     }
 
-    // import jwt from "jsonwebtoken"
-    const playload: any = jwt.verify (token , JWT_REFRESH_SECRET)
-    const user = await User.findById(playload.sub)
+    const payload: any = jwt.verify(token, JWT_REFRESH_SECRET)
+
+    const user = await User.findById(payload.sub)
     if (!user) {
-      return res.status(403).json({
-        message: "Invalid Access Token"
-      })
+      return res.status(403).json({ message: "User not found" })
     }
-    const accessToken = signRefreshToken(user)
+
+    const newAccessToken = signAccessToken(user)
 
     res.status(200).json({
-      accessToken
+      accessToken: newAccessToken
     })
-  } catch (error) {
+  } catch {
     res.status(403).json({
-      message: "Invalid or expired token"
+      message: "Invalid or expired refresh token"
     })
   }
 }
+
