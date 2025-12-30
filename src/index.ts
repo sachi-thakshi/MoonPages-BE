@@ -32,15 +32,24 @@ const connectToDatabase = async () => {
 app.use(express.json())
 app.use(
     cors({
-        origin: ["http://localhost:5173"],
+        // origin: ["http://localhost:5173"],
+        origin: [
+            "http://localhost:5173",
+            "https://moon-pages-be.vercel.app"
+        ],
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
         credentials: true
     })
 )
 
 app.use(async (req, res, next) => {
+  try {
     await connectToDatabase()
     next()
+  } catch (err) {
+    console.error("DB middleware error:", err)
+    res.status(500).json({ message: "Database connection failed" })
+  }
 })
 
 app.use((req, res, next) => {
