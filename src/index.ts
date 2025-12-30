@@ -35,7 +35,8 @@ app.use(
         // origin: ["http://localhost:5173"],
         origin: [
             "http://localhost:5173",
-            "https://moon-pages-be.vercel.app"
+            "https://moon-pages-be.vercel.app",
+            "https://moon-pages-fe.vercel.app"
         ],
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
         credentials: true
