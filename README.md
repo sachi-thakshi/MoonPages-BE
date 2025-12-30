@@ -11,6 +11,7 @@ Authors can upload and manage books. Admins can monitor user activity, and maint
 
 ### User Features
 - Registration and login (Reader role)
+- Forgot passsword and Reset Password(via Gmails)
 - Online book reader with pagination and dark mode
 - Bookmarking and text highlighting
 - Reading progress tracker and dashboard
