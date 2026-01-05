@@ -103,7 +103,7 @@ EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=465
 EMAIL_USER=your_email
 EMAIL_PASS=your_email_project_passkey
-CLIENT_URL=http://localhost:5173
+CLIENT_URL=https://moon-pages-fe.vercel.app
 ```
 
 4. Run development server:
