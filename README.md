@@ -43,7 +43,7 @@ Authors can upload and manage books. Admins can monitor user activity, and maint
 - JWT for authentication
 - bcryptjs for password hashing
 - OpenAI API for AI chatbot
-- Cloudinary for book cover uploads
+- Cloudinary for book cover uploads and profile pic uploads
 
 ---
 
