@@ -28,6 +28,7 @@ export const forgotPassword = async (
         await user.save()
 
         const frontendUrl = process.env.CLIENT_URL || "http://localhost:5173"
+        if (!frontendUrl) throw new Error("CLIENT_URL environment variable is not defined!")
 
         const resetUrl = `${frontendUrl}/reset-password/${resetToken}`
 
